@@ -6,7 +6,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.Arrays;
 
-public class HeapSortVisualization extends JFrame {
+public class HeapSortVisualization {
     private int[] array;
     private int currentIndex;
     private JLabel swapHeading;
@@ -15,83 +15,102 @@ public class HeapSortVisualization extends JFrame {
     private HeapPanel heapPanel;
     private boolean isHeapBuilded;
     private boolean isSorted;
-
+    private int swapIndex1 = -1; // Initialize to -1 when no swapping is happening
+    private int swapIndex2 = -1; // Initialize to -1 when no swapping is happening
+    private JFrame mainFrame;
 
     public HeapSortVisualization(int[] array) {
-
-
         this.array = Arrays.copyOf(array, array.length);
         this.currentIndex = array.length - 1;
 
         Font labelFont = new Font("Arial", Font.BOLD, 18);
-        setLayout(new BorderLayout());
+
+        mainFrame = new JFrame("Heap Sort Visualization");
+        mainFrame.setLayout(null);
+
         heapPanel = new HeapPanel();
-        swapHeading=new JLabel("To Swap");
+        swapHeading = new JLabel("To Swap");
         swapHeading.setFont(labelFont);
-        swapHeading.setBounds(625,110,95,35);
+        swapHeading.setBounds(625, 110, 95, 35);
         swapHeading.setHorizontalAlignment(SwingConstants.CENTER);
         swapHeading.setBorder(new LineBorder(Color.gray, 2, true));
         heapPanel.add(swapHeading);
 
         Font f1 = new Font("Arial", Font.BOLD, 15);
-        swapFirst=new JLabel("--");
-        swapFirst.setBounds(575,145,95,35);
+        swapFirst = new JLabel("--");
+        swapFirst.setBounds(575, 145, 95, 35);
         swapFirst.setFont(f1);
         swapFirst.setBorder(new LineBorder(Color.gray, 2, true));
         swapFirst.setHorizontalAlignment(SwingConstants.CENTER);
         heapPanel.add(swapFirst);
 
-        swapSecond=new JLabel("--");
-        swapSecond.setBounds(668,145,100,35);
+        swapSecond = new JLabel("--");
+        swapSecond.setBounds(668, 145, 100, 35);
         swapSecond.setFont(f1);
         swapSecond.setBorder(new LineBorder(Color.gray, 2, true));
         swapSecond.setHorizontalAlignment(SwingConstants.CENTER);
+        heapPanel.setBounds(2, 2, 700, 500);
         heapPanel.add(swapSecond);
-        add(heapPanel, BorderLayout.CENTER);
 
         JButton sortButton = new JButton("Sort");
         JButton buildHeapButton = new JButton("Built Heap");
 
-        buildHeapButton.addActionListener(e->{
-            if(!isHeapBuilded) {
+        buildHeapButton.addActionListener(e -> {
+            if (!isHeapBuilded) {
                 buildMaxHeap();
-                isHeapBuilded=true;
+                isHeapBuilded = true;
             }
-            JOptionPane.showMessageDialog(null,"Heap Already Builded");
+            JOptionPane.showMessageDialog(null, "Heap Already Built");
             heapPanel.repaint();
         });
         sortButton.addActionListener(e -> {
-            if(!isHeapBuilded){
+            if (!isHeapBuilded) {
                 buildMaxHeap();
             }
             heapSort();
             heapPanel.repaint();
         });
 
-        add(sortButton, BorderLayout.SOUTH);
-        add(buildHeapButton,BorderLayout.NORTH);
-        setTitle("Heap Sort Visualization");
-        setSize(800, 600);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        heapPanel.add(sortButton);
+        heapPanel.add(buildHeapButton);
+        mainFrame.add(heapPanel);
+        mainFrame.setSize(800, 600);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     private void heapSort() {
-
         for (int i = currentIndex; i > 0; i--) {
+
             swap(0, i);
             currentIndex--;
             maxHeapify(0);
+            heapPanel.repaint(); // Repaint after swapping
+//            try {
+//                Thread.sleep(1000); // Add a delay to visualize the swapping
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+            swapIndex1 = -1; // Reset swap indices
+            swapIndex2 = -1;
+            heapPanel.repaint(); // Repaint to revert the color change
         }
-        JOptionPane.showMessageDialog(null,"Sorted");
+        JOptionPane.showMessageDialog(null, "Sorted");
     }
 
     private void buildMaxHeap() {
         for (int i = array.length / 2 - 1; i >= 0; i--) {
+            swapIndex1 = i;
             maxHeapify(i);
+            heapPanel.repaint(); // Repaint to show the swapping color
+//            try {
+//                Thread.sleep(1000); // Add a delay to visualize the swapping
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+            swapIndex1 = -1; // Reset swap index
+            heapPanel.repaint(); // Repaint to revert the color change
         }
-        JOptionPane.showMessageDialog(null,"HEAP BUILDED");
-
+        JOptionPane.showMessageDialog(null, "Heap Built");
     }
 
     private void maxHeapify(int i) {
@@ -108,12 +127,15 @@ public class HeapSortVisualization extends JFrame {
         }
 
         if (largest != i) {
-            swapFirst.setText(String.valueOf( array[largest]));
+            swapFirst.setText(String.valueOf(array[largest]));
             swapSecond.setText(String.valueOf(array[i]));
-            JOptionPane.showMessageDialog(null,"Swap : "+array[largest]+" with " + array[i]);
+            swapIndex1 = largest;
+            swapIndex2 = i;
+            heapPanel.repaint(); // Repaint to show the swapping color
             swap(i, largest);
-            maxHeapify(largest);
+            JOptionPane.showMessageDialog(null, "Swap : " + array[largest] + " with " + array[i]);
 
+            maxHeapify(largest);
         }
     }
 
@@ -139,8 +161,6 @@ public class HeapSortVisualization extends JFrame {
         }
 
         protected void paintComponent(Graphics g) {
-
-
             Border etchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
 
             TitledBorder titledBorder = BorderFactory.createTitledBorder(etchedBorder, "HEAP VISUALIZATION");
@@ -169,7 +189,15 @@ public class HeapSortVisualization extends JFrame {
             // Draw the tree using a loop
             for (int currentIndex = 0; currentIndex < array.length; currentIndex++) {
                 NodeInfo currentNode = nodeCoordinates[currentIndex];
-                drawCircle(g, currentNode.x, currentNode.y, array[currentIndex]);
+                if (currentIndex == swapIndex1 || currentIndex == swapIndex2) {
+                    // Change the color to red for nodes being swapped
+                    g.setColor(Color.RED);
+                } else {
+                    g.setColor(Color.BLUE);
+                }
+                g.drawOval(currentNode.x, currentNode.y, CIRCLE_RADIUS, CIRCLE_RADIUS);
+                g.setColor(Color.BLACK);
+                g.drawString(String.valueOf(array[currentIndex]), currentNode.x + CIRCLE_RADIUS / 2 - 5, currentNode.y + CIRCLE_RADIUS / 2 + 5);
 
                 // Draw lines between parent and child nodes
                 int parentX = currentNode.x + CIRCLE_RADIUS / 2;
@@ -181,8 +209,6 @@ public class HeapSortVisualization extends JFrame {
                 drawLine(g, parentX, parentY, nodeCoordinates, leftChildIndex);
                 drawLine(g, parentX, parentY, nodeCoordinates, rightChildIndex);
             }
-
-
         }
 
         private void drawLine(Graphics g, int parentX, int parentY, NodeInfo[] nodeCoordinates, int childIndex) {
@@ -191,21 +217,17 @@ public class HeapSortVisualization extends JFrame {
                 g.drawLine(parentX, parentY, childNode.x + CIRCLE_RADIUS / 2, childNode.y);
             }
         }
+    }
 
-
-        private void drawCircle(Graphics g, int x, int y, int value) {
-            g.setColor(Color.BLUE);
-            g.drawOval(x, y, CIRCLE_RADIUS, CIRCLE_RADIUS);
-            g.setColor(Color.BLACK);
-            g.drawString(String.valueOf(value), x + CIRCLE_RADIUS / 2 - 5, y + CIRCLE_RADIUS / 2 + 5);
-        }
+    public void run() {
+        mainFrame.setVisible(true);
     }
 
     public static void main(String[] args) {
-        int[] arrayToSort = {4, 10, 3, 5, 1,2,12,9,6};
+        int[] arrayToSort = {4, 10, 3, 5, 1, 2, 12, 9, 6};
         SwingUtilities.invokeLater(() -> {
             HeapSortVisualization heapSortVisualization = new HeapSortVisualization(arrayToSort);
-            heapSortVisualization.setVisible(true);
+            heapSortVisualization.run();
         });
     }
 }
