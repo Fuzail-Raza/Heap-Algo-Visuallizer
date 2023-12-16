@@ -13,6 +13,9 @@ public class HeapSortVisualization extends JFrame {
     private JLabel swapFirst;
     private JLabel swapSecond;
     private HeapPanel heapPanel;
+    private boolean isHeapBuilded;
+    private boolean isSorted;
+
 
     public HeapSortVisualization(int[] array) {
 
@@ -47,13 +50,26 @@ public class HeapSortVisualization extends JFrame {
         add(heapPanel, BorderLayout.CENTER);
 
         JButton sortButton = new JButton("Sort");
+        JButton buildHeapButton = new JButton("Built Heap");
+
+        buildHeapButton.addActionListener(e->{
+            if(!isHeapBuilded) {
+                buildMaxHeap();
+                isHeapBuilded=true;
+            }
+            JOptionPane.showMessageDialog(null,"Heap Already Builded");
+            heapPanel.repaint();
+        });
         sortButton.addActionListener(e -> {
+            if(!isHeapBuilded){
+                buildMaxHeap();
+            }
             heapSort();
             heapPanel.repaint();
         });
 
         add(sortButton, BorderLayout.SOUTH);
-
+        add(buildHeapButton,BorderLayout.NORTH);
         setTitle("Heap Sort Visualization");
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -61,8 +77,7 @@ public class HeapSortVisualization extends JFrame {
     }
 
     private void heapSort() {
-        buildMaxHeap();
-        JOptionPane.showMessageDialog(null,"HEAP BUILDED");
+
         for (int i = currentIndex; i > 0; i--) {
             swap(0, i);
             currentIndex--;
@@ -75,6 +90,8 @@ public class HeapSortVisualization extends JFrame {
         for (int i = array.length / 2 - 1; i >= 0; i--) {
             maxHeapify(i);
         }
+        JOptionPane.showMessageDialog(null,"HEAP BUILDED");
+
     }
 
     private void maxHeapify(int i) {
