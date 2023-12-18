@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heap Sort Visualization</title>
+    <style>
+        #heap-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+        }
+
+        .heap-node {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #000;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <button onclick="buildHeap()">Build Heap</button>
+    <button onclick="heapSort()">Heap Sort</button>
+</div>
+
+<div id="heap-container"></div>
+
+<script>
+    const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+    async function swap(node1, node2) {
+        const temp = node1.innerText;
+        node1.innerText = node2.innerText;
+        node2.innerText = temp;
+
+        node1.style.backgroundColor = 'red';
+        node2.style.backgroundColor = 'red';
+
+        await delay(1000); // Delay for visualization
+        node1.style.backgroundColor = '';
+        node2.style.backgroundColor = '';
+    }
+
+    async function maxHeapify(array, i, heapNodes) {
+        const left = 2 * i + 1;
+        const right = 2 * i + 2;
+        let largest = i;
+
+        if (left < array.length && array[left] > array[largest]) {
+            largest = left;
+        }
+
+        if (right < array.length && array[right] > array[largest]) {
+            largest = right;
+        }
+
+        if (largest !== i) {
+            await swap(heapNodes[i], heapNodes[largest]);
+            await maxHeapify(array, largest, heapNodes);
+        }
+    }
+
+    async function buildMaxHeap(array, heapNodes) {
+        for (let i = Math.floor(array.length / 2) - 1; i >= 0; i--) {
+            await maxHeapify(array, i, heapNodes);
+        }
+    }
+
+    async function heapSort() {
+        const array = [...heapNodes].map(node => parseInt(node.innerText));
+        for (let i = array.length - 1; i > 0; i--) {
+            await swap(heapNodes[0], heapNodes[i]);
+            await maxHeapify(array, 0, heapNodes.slice(0, i));
+        }
+    }
+
+    async function buildHeap() {
+        const array = generateRandomArray(10); // Change the array size as needed
+        const heapContainer = document.getElementById('heap-container');
+        heapContainer.innerHTML = '';
+
+        const heapNodes = array.map(value => {
+            const node = document.createElement('div');
+            node.className = 'heap-node';
+            node.innerText = value;
+            heapContainer.appendChild(node);
+            return node;
+        });
+
+        await buildMaxHeap(array, heapNodes);
+    }
+
+    function generateRandomArray(size) {
+        const array = [];
+        for (let i = 1; i <= size; i++) {
+            array.push(i);
+        }
+        // Shuffle the array
+        for (let i = size - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+</script>
+</body>
+</html>

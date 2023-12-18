@@ -80,7 +80,7 @@ public class HeapSortVisualization {
 
     private void heapSort() {
         for (int i = currentIndex; i > 0; i--) {
-
+            JOptionPane.showMessageDialog(null, "Swap : " + array[0] + " with " + array[i]);
             swap(0, i);
             currentIndex--;
             maxHeapify(0);
@@ -132,9 +132,8 @@ public class HeapSortVisualization {
             swapIndex1 = largest;
             swapIndex2 = i;
             heapPanel.repaint(); // Repaint to show the swapping color
-            swap(i, largest);
             JOptionPane.showMessageDialog(null, "Swap : " + array[largest] + " with " + array[i]);
-
+            swap(i, largest);
             maxHeapify(largest);
         }
     }
