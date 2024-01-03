@@ -223,10 +223,26 @@ public class HeapSortVisualization {
     }
 
     public static void main(String[] args) {
-        int[] arrayToSort = {4, 10, 3, 5, 1, 2, 12, 9, 6};
-        SwingUtilities.invokeLater(() -> {
-            HeapSortVisualization heapSortVisualization = new HeapSortVisualization(arrayToSort);
-            heapSortVisualization.run();
-        });
+
+        String arrayInput=JOptionPane.showInputDialog(null,"Enter Array to Make Heap with Spaces between Them");
+//        int[] arrayToSort = {4, 10, 3, 5, 1, 2, 12, 9, 6};
+
+        try {
+            String[] inputNumbers = arrayInput.split("\\s+");
+            int[] arrayToSort = new int[inputNumbers.length];
+            for (int i = 0; i < inputNumbers.length; i++) {
+                arrayToSort[i] = Integer.parseInt(inputNumbers[i]);
+            }
+            SwingUtilities.invokeLater(() -> {
+                HeapSortVisualization heapSortVisualization = new HeapSortVisualization(arrayToSort);
+                heapSortVisualization.run();
+            });
+        }
+        catch (Exception e){
+            JOptionPane.showMessageDialog(null,"Wrong Input","Invalid Input",JOptionPane.ERROR_MESSAGE);
+            main(args);
+        }
+
+
     }
 }
