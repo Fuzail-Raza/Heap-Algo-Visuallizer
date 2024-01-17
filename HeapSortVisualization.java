@@ -19,6 +19,18 @@ public class HeapSortVisualization {
     private int swapIndex2 = -1; // Initialize to -1 when no swapping is happening
     private JFrame mainFrame;
 
+    //For Second Frame
+
+    private JTextArea currentCode;
+    private JLabel orignalArrayShow;
+    private JLabel orignalArrayLabel;
+    private JLabel currentArrayLabel;
+    private JLabel currentArrayShow;
+    private JLabel heading;
+    private JFrame secondFrame;
+    private JPanel secondPanel;
+
+
     public HeapSortVisualization(int[] array) {
         this.array = Arrays.copyOf(array, array.length);
         this.currentIndex = array.length - 1;
@@ -52,10 +64,13 @@ public class HeapSortVisualization {
         heapPanel.setBounds(2, 2, 700, 500);
         heapPanel.add(swapSecond);
 
+        showSecondFrame();
+
         JButton sortButton = new JButton("Sort");
-        JButton buildHeapButton = new JButton("Built Heap");
+        JButton buildHeapButton = new JButton("Built Max Heap");
 
         buildHeapButton.addActionListener(e -> {
+            changeCodeInTextField(true);
             if (!isHeapBuilded) {
                 buildMaxHeap();
                 isHeapBuilded = true;
@@ -65,8 +80,10 @@ public class HeapSortVisualization {
         });
         sortButton.addActionListener(e -> {
             if (!isHeapBuilded) {
+                changeCodeInTextField(true);
                 buildMaxHeap();
             }
+            changeCodeInTextField(false);
             heapSort();
             heapPanel.repaint();
         });
@@ -78,18 +95,148 @@ public class HeapSortVisualization {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
+    private void changeCodeInTextField(Boolean isBuilt) {
+
+        if(isBuilt) {
+            String s = "private void maxHeapify(int i) {\n" +
+                    "        int left = 2 * i + 1;\n" +
+                    "        int right = 2 * i + 2;\n" +
+                    "        int largest = i;\n" +
+                    "\n" +
+                    "        if (left <= currentIndex && array[left] > array[largest]) {\n" +
+                    "            largest = left;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        if (right <= currentIndex && array[right] > array[largest]) {\n" +
+                    "            largest = right;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        if (largest != i) {\n" +
+                    "            swap(i, largest);\n" +
+                    "            maxHeapify(largest);\n" +
+                    "        }\n" +
+                    "    }" +
+                    "\n"+
+                    "private void buildMaxHeap() {\n" +
+                    "        for (int i = array.length / 2 - 1; i >= 0; i--) {\n" +
+                    "            maxHeapify(i);\n" +
+                    "        }\n" +
+                    "    }";
+            currentCode.setText(s);
+        }
+        else {
+            String s = "private void maxHeapify(int i) {\n" +
+                    "        int left = 2 * i + 1;\n" +
+                    "        int right = 2 * i + 2;\n" +
+                    "        int largest = i;\n" +
+                    "\n" +
+                    "        if (left <= currentIndex && array[left] > array[largest]) {\n" +
+                    "            largest = left;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        if (right <= currentIndex && array[right] > array[largest]) {\n" +
+                    "            largest = right;\n" +
+                    "        }\n" +
+                    "\n" +
+                    "        if (largest != i) {\n" +
+                    "            swap(i, largest);\n" +
+                    "            maxHeapify(largest);\n" +
+                    "        }\n" +
+                    "    }" +
+                    "\n" +
+                    "private void heapSort() {\n" +
+                    "        for (int i = currentIndex; i > 0; i--) {\n" +
+                    "            swap(0, i);\n" +
+                    "            currentIndex--;\n" +
+                    "            maxHeapify(0);\n" +
+                    "        }\n" +
+                    "    }";
+            currentCode.setText(s);
+        }
+    }
+
+    private void showSecondFrame() {
+
+        secondFrame=new JFrame("Heap Sort Visualization");
+        secondPanel=new JPanel(null);
+
+        Font f1= new Font("Arial", Font.BOLD, 14);
+
+        currentCode = new JTextArea (5, 5);
+        orignalArrayShow = new JLabel ("");
+        orignalArrayLabel = new JLabel ("Orignal Array");
+        currentArrayLabel = new JLabel ("Current Array");
+        currentArrayShow = new JLabel ("");
+        heading = new JLabel ("Current Code Running");
+
+        updateArrayLabel();
+        orignalArrayLabel.setFont(f1);
+        currentArrayLabel.setFont(f1);
+
+
+
+        Font f=new Font("Arial",Font.BOLD,18);
+        heading.setFont(f);
+
+        String orignalArrayString="[";
+        int i=0;
+        for (int o:array){
+            orignalArrayString+=o;
+            if(i<array.length-1) {
+                orignalArrayString += ",";
+            }
+            i++;
+        }
+        orignalArrayString+="]";
+
+        orignalArrayShow.setText(orignalArrayString);
+
+        secondPanel.add (currentCode);
+        secondPanel.add (orignalArrayShow);
+        secondPanel.add (orignalArrayLabel);
+        secondPanel.add (currentArrayLabel);
+        secondPanel.add (currentArrayShow);
+        secondPanel.add (heading);
+
+        currentCode.setBounds (235, 120, 525, 520);
+        orignalArrayShow.setBounds (75, 190, 100, 25);
+        orignalArrayLabel.setBounds (75, 155, 100, 25);
+        currentArrayLabel.setBounds (80, 250, 100, 25);
+        currentArrayShow.setBounds (75, 290, 100, 25);
+        heading.setBounds (340, 75, 300, 25);
+
+        heading.setBorder(BorderFactory.createLineBorder(Color.GRAY,2,true));
+        heading.setHorizontalAlignment(SwingConstants.CENTER);
+
+        currentCode.setEditable(false);
+
+
+        Border etchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(etchedBorder, "HEAP SORT VISUALIZATION");
+        titledBorder.setTitleColor(Color.BLACK);
+        Font labelFont = new Font("Arial", Font.BOLD, 18);
+        titledBorder.setTitleJustification(TitledBorder.CENTER);
+        titledBorder.setTitleFont(labelFont);
+
+        secondPanel.setBorder(titledBorder);
+
+        secondFrame.setSize(790, 720);
+        secondFrame.add(secondPanel);
+        secondFrame.setVisible(true);
+
+
+
+    }
+
     private void heapSort() {
         for (int i = currentIndex; i > 0; i--) {
             JOptionPane.showMessageDialog(null, "Swap : " + array[0] + " with " + array[i]);
             swap(0, i);
+            updateArrayLabel();
             currentIndex--;
             maxHeapify(0);
-            heapPanel.repaint(); // Repaint after swapping
-//            try {
-//                Thread.sleep(1000); // Add a delay to visualize the swapping
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+            heapPanel.repaint();
             swapIndex1 = -1; // Reset swap indices
             swapIndex2 = -1;
             heapPanel.repaint(); // Repaint to revert the color change
@@ -97,18 +244,29 @@ public class HeapSortVisualization {
         JOptionPane.showMessageDialog(null, "Sorted");
     }
 
+    private void updateArrayLabel() {
+
+        String orignalArrayString="[";
+        int i=0;
+        for (int o:array){
+            orignalArrayString+=o;
+            if(i<array.length-1) {
+                orignalArrayString += ",";
+            }
+            i++;
+        }
+        orignalArrayString+="]";
+
+        currentArrayShow.setText(orignalArrayString);
+    }
+
     private void buildMaxHeap() {
         for (int i = array.length / 2 - 1; i >= 0; i--) {
             swapIndex1 = i;
             maxHeapify(i);
-            heapPanel.repaint(); // Repaint to show the swapping color
-//            try {
-//                Thread.sleep(1000); // Add a delay to visualize the swapping
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-            swapIndex1 = -1; // Reset swap index
-            heapPanel.repaint(); // Repaint to revert the color change
+            heapPanel.repaint();
+            swapIndex1 = -1;
+            heapPanel.repaint();
         }
         JOptionPane.showMessageDialog(null, "Heap Built");
     }
@@ -134,6 +292,7 @@ public class HeapSortVisualization {
             heapPanel.repaint(); // Repaint to show the swapping color
             JOptionPane.showMessageDialog(null, "Swap : " + array[largest] + " with " + array[i]);
             swap(i, largest);
+            updateArrayLabel();
             maxHeapify(largest);
         }
     }
@@ -142,6 +301,7 @@ public class HeapSortVisualization {
         int temp = array[i];
         array[i] = array[j];
         array[j] = temp;
+        updateArrayLabel();
     }
 
     class HeapPanel extends JPanel {
