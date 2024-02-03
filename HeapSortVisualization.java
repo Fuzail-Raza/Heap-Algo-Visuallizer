@@ -15,8 +15,8 @@ public class HeapSortVisualization {
     private HeapPanel heapPanel;
     private boolean isHeapBuilded;
     private boolean isSorted;
-    private int swapIndex1 = -1; // Initialize to -1 when no swapping is happening
-    private int swapIndex2 = -1; // Initialize to -1 when no swapping is happening
+    private int swapIndex1 = -1;
+    private int swapIndex2 = -1;
     private JFrame mainFrame;
 
     //For Second Frame
@@ -92,6 +92,7 @@ public class HeapSortVisualization {
         heapPanel.add(buildHeapButton);
         mainFrame.add(heapPanel);
         mainFrame.setSize(800, 600);
+        mainFrame.setVisible(true);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
@@ -199,10 +200,10 @@ public class HeapSortVisualization {
         secondPanel.add (heading);
 
         currentCode.setBounds (235, 120, 525, 520);
-        orignalArrayShow.setBounds (75, 190, 100, 25);
+        orignalArrayShow.setBounds (75, 190, 150, 25);
         orignalArrayLabel.setBounds (75, 155, 100, 25);
         currentArrayLabel.setBounds (80, 250, 100, 25);
-        currentArrayShow.setBounds (75, 290, 100, 25);
+        currentArrayShow.setBounds (75, 290, 150, 25);
         heading.setBounds (340, 75, 300, 25);
 
         heading.setBorder(BorderFactory.createLineBorder(Color.GRAY,2,true));
@@ -231,7 +232,7 @@ public class HeapSortVisualization {
 
     private void heapSort() {
         for (int i = currentIndex; i > 0; i--) {
-            JOptionPane.showMessageDialog(null, "Swap : " + array[0] + " with " + array[i]);
+            JOptionPane.showMessageDialog(null, "Swap : " + array[0] + " with " + array[i] + " \nAs it is Maximum in with Respect to Current Heap 0 - "+i +"th element");
             swap(0, i);
             updateArrayLabel();
             currentIndex--;
@@ -306,10 +307,8 @@ public class HeapSortVisualization {
 
     class HeapPanel extends JPanel {
         private static final int CIRCLE_RADIUS = 30;
-        private static final int HORIZONTAL_GAP = 50;
-        private static final int VERTICAL_GAP = 80;
 
-        class NodeInfo {
+        static class NodeInfo {
             int x;
             int y;
 
@@ -343,7 +342,6 @@ public class HeapSortVisualization {
                     new NodeInfo((int) (155 / 1.5) * 2, 280)
             };
 
-            int rootNodeIndex = 0;
 
             // Draw the tree using a loop
             for (int currentIndex = 0; currentIndex < array.length; currentIndex++) {
@@ -358,7 +356,6 @@ public class HeapSortVisualization {
                 g.setColor(Color.BLACK);
                 g.drawString(String.valueOf(array[currentIndex]), currentNode.x + CIRCLE_RADIUS / 2 - 5, currentNode.y + CIRCLE_RADIUS / 2 + 5);
 
-                // Draw lines between parent and child nodes
                 int parentX = currentNode.x + CIRCLE_RADIUS / 2;
                 int parentY = currentNode.y + CIRCLE_RADIUS;
 
@@ -379,24 +376,24 @@ public class HeapSortVisualization {
     }
 
     public void run() {
-        mainFrame.setVisible(true);
     }
 
     public static void main(String[] args) {
 
-        String arrayInput=JOptionPane.showInputDialog(null,"Enter Array to Make Heap with Spaces between Them");
-//        int[] arrayToSort = {4, 10, 3, 5, 1, 2, 12, 9, 6};
+        String arrayInput=JOptionPane.showInputDialog(null,"Enter Array to Make Heap with Spaces between Them Max 9 elements");
 
         try {
             String[] inputNumbers = arrayInput.split("\\s+");
+            if(inputNumbers.length>9){
+                JOptionPane.showMessageDialog(null,"Heap lenght must be less than 10");
+                main(args);
+            }
             int[] arrayToSort = new int[inputNumbers.length];
             for (int i = 0; i < inputNumbers.length; i++) {
                 arrayToSort[i] = Integer.parseInt(inputNumbers[i]);
             }
-            SwingUtilities.invokeLater(() -> {
-                HeapSortVisualization heapSortVisualization = new HeapSortVisualization(arrayToSort);
-                heapSortVisualization.run();
-            });
+            new HeapSortVisualization(arrayToSort);
+
         }
         catch (Exception e){
             JOptionPane.showMessageDialog(null,"Wrong Input","Invalid Input",JOptionPane.ERROR_MESSAGE);
